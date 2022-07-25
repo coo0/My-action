@@ -1,4 +1,4 @@
-name: Build-Padavan
+name: Build-Padavan-RM2100
 
 on:
   workflow_dispatch:
