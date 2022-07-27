@@ -24,7 +24,11 @@ jobs:
         uses: 1orz/cacheopenwrt@main
         with:
           ccache: true
-
+      - name: SSH connection to Actions
+        uses: P3TERX/ssh2actions@v1.0.0
+        env:
+         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       - name: Download and Load custom configuration
         run: |
           curl -fsSL https://raw.githubusercontent.com/${{github.repository}}/master/lede/mt7621/.config >.config
