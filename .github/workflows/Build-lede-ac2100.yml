@@ -53,7 +53,7 @@ jobs:
         if: success()
         run: |
           cd bin/targets/*/*
-          zip -r -o -q -9 mt7621.zip . -i *.bin
+          zip -r -o -q -9 mt7621-lede.zip . -i *.bin
           curl -F "token=${{ secrets.UPLOAD_TOKEN }}" -F "location=Router/lede/XiaoMi/XiaoMi-AC2100" -F "file=@mt7621.zip" ${{ secrets.MAIN_UPLOAD_PROCESSOR }}
       
       - name: Remove workflow runs
@@ -110,7 +110,7 @@ jobs:
         if: success()
         run: |
           cd bin/targets/*/*
-          zip -r -o -q -9 mt7621.zip . -i *.bin
+          zip -r -o -q -9 mt7621-openwrt.zip . -i *.bin
           curl -F "token=${{ secrets.UPLOAD_TOKEN }}" -F "location=Router/Openwrt/XiaoMi/XiaoMi-AC2100" -F "file=@mt7621.zip" ${{ secrets.MAIN_UPLOAD_PROCESSOR }}
       
       - name: Remove workflow runs
