@@ -33,6 +33,7 @@ jobs:
         run: |
           curl -fsSL https://raw.githubusercontent.com/${{github.repository}}/master/lede/mt7621/.config >.config
           bash <(curl -fsSL https://raw.githubusercontent.com/${{github.repository}}/master/lede/diy.sh)
+          curl -fsSL https://raw.githubusercontent.com/${{github.repository}}/master/lede/zzz-default-settings >package/lean/default-settings/files/zzz-default-settings
           echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> .config; make defconfig
 
       - name: Download package
