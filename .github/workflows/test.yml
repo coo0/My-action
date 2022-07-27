@@ -17,8 +17,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           echo ${{github.repository}}
-          chmod +x ./lede/prevn.sh
-          bash ./lede/prevn.sh
+          bash <(curl -fsSL https://raw.githubusercontent.com/${{github.repository}}/master/lede/prenv.sh)
 
       - name: Checkout repo
         uses: actions/checkout@v2
