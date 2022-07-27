@@ -1,0 +1,121 @@
+name: Build-lede-ac2100
+on:
+  workflow_dispatch:
+#  schedule:
+#    - cron: 0 0/6 * * *
+
+jobs:     
+  MT7621:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare environment.
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          bash <(curl -fsSL https://raw.githubusercontent.com/1orz/My-action/master/lede/prenv.sh)
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          repository: coolsnowwolf/lede
+          fetch-depth: 0
+      
+      - name: Cache
+        uses: 1orz/cacheopenwrt@main
+        with:
+          ccache: true
+
+      - name: Download and Load custom configuration
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/1orz/My-action/master/lede/mt7621/.config >.config
+          bash <(curl -fsSL https://raw.githubusercontent.com/1orz/My-action/master/lede/diy.sh)
+          echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> .config; make defconfig
+
+      - name: Download package
+        run: |
+          make download -j8 >/dev/null 2>&1
+
+      - name: When Multi-core compile failure will be rollback to Single core compile
+        run: |
+          echo -e "Will be use $(nproc) thread compile"
+          sudo df -h
+          make -j$(nproc) || make -j1 V=sc
+          sudo df -h
+
+      - name: Only Upload firmware
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: mt7621
+          path: bin/targets/*/*
+
+      - name: Upload firmware to Download Station
+        if: success()
+        run: |
+          cd bin/targets/*/*
+          zip -r -o -q -9 mt7621.zip . -i *.bin
+          curl -F "token=${{ secrets.UPLOAD_TOKEN }}" -F "location=Router/lede/XiaoMi/XiaoMi-AC2100" -F "file=@mt7621.zip" ${{ secrets.MAIN_UPLOAD_PROCESSOR }}
+      
+      - name: Remove workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 1
+          
+  MT7621-Openwrt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare environment.
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          bash <(curl -fsSL https://raw.githubusercontent.com/1orz/My-action/master/openwrt/prenv.sh)
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          repository: openwrt/openwrt
+          fetch-depth: 0
+      
+      - name: Cache
+        uses: 1orz/cacheopenwrt@main
+        with:
+          ccache: true
+
+      - name: Download and Load custom configuration
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/1orz/My-action/master/openwrt/mt7621/.config >.config
+          bash <(curl -fsSL https://raw.githubusercontent.com/1orz/My-action/master/openwrt/diy.sh)
+          echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> .config; make defconfig
+
+      - name: Download package
+        run: |
+          make download -j8 >/dev/null 2>&1
+
+      - name: When Multi-core compile failure will be rollback to Single core compile
+        run: |
+          echo -e "Will be use $(nproc) thread compile"
+          sudo df -h
+          make -j$(nproc) || make -j1 V=sc
+          sudo df -h
+
+      - name: Only Upload firmware
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: mt7621
+          path: bin/targets/*/*
+
+      - name: Upload firmware to Download Station
+        if: success()
+        run: |
+          cd bin/targets/*/*
+          zip -r -o -q -9 mt7621.zip . -i *.bin
+          curl -F "token=${{ secrets.UPLOAD_TOKEN }}" -F "location=Router/Openwrt/XiaoMi/XiaoMi-AC2100" -F "file=@mt7621.zip" ${{ secrets.MAIN_UPLOAD_PROCESSOR }}
+      
+      - name: Remove workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 1
+          
