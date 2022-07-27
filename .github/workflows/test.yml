@@ -16,8 +16,8 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          chmod +x $GITHUB_WORKSPACE/lede/prevn.sh
-          bash $GITHUB_WORKSPACE/lede/prevn.sh
+          chmod +x ./lede/prevn.sh
+          bash ./lede/prevn.sh
 
       - name: Checkout repo
         uses: actions/checkout@v2
