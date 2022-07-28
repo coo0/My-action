@@ -4,7 +4,7 @@ on:
 #  schedule:
 #    - cron: 0 0/6 * * *
 
-jobs:     
+jobs:
   MT7621:
     runs-on: ubuntu-latest
     steps:
@@ -46,22 +46,25 @@ jobs:
         uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: mt7621
+          name: mt7621-lede
           path: bin/targets/*/*
 
-      - name: Upload firmware to Download Station
+      - name: Upload Firmware to Github Release
+        uses: svenstaro/upload-release-action@v2
         if: success()
-        run: |
-          cd bin/targets/*/*
-          zip -r -o -q -9 mt7621-lede.zip . -i *.bin
-          curl -F "token=${{ secrets.UPLOAD_TOKEN }}" -F "location=Router/lede/XiaoMi/XiaoMi-AC2100" -F "file=@mt7621.zip" ${{ secrets.MAIN_UPLOAD_PROCESSOR }}
-      
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: bin/targets/*/*
+          file_glob: true
+          tag: AutoUpdate
+          overwrite: true
+
       - name: Remove workflow runs
         uses: Mattraks/delete-workflow-runs@main
         with:
           retain_days: 1
           keep_minimum_runs: 1
-          
+
   MT7621-Openwrt:
     runs-on: ubuntu-latest
     steps:
@@ -76,7 +79,7 @@ jobs:
         with:
           repository: openwrt/openwrt
           fetch-depth: 0
-      
+
       - name: Cache
         uses: 1orz/cacheopenwrt@main
         with:
@@ -103,19 +106,19 @@ jobs:
         uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: mt7621
+          name: mt7621-openwrt
           path: bin/targets/*/*
-
-      - name: Upload firmware to Download Station
+      - name: Upload Firmware to Github Release
+        uses: svenstaro/upload-release-action@v2
         if: success()
-        run: |
-          cd bin/targets/*/*
-          zip -r -o -q -9 mt7621-openwrt.zip . -i *.bin
-          curl -F "token=${{ secrets.UPLOAD_TOKEN }}" -F "location=Router/Openwrt/XiaoMi/XiaoMi-AC2100" -F "file=@mt7621.zip" ${{ secrets.MAIN_UPLOAD_PROCESSOR }}
-      
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: bin/targets/*/*
+          file_glob: true
+          tag: AutoUpdate
+          overwrite: true
       - name: Remove workflow runs
         uses: Mattraks/delete-workflow-runs@main
         with:
           retain_days: 1
           keep_minimum_runs: 1
-          
