@@ -4,8 +4,8 @@ on:
     branches:
       - main
   workflow_dispatch:
-  schedule:
-    - cron: 0 0/6 * * *
+  #schedule:
+  #  - cron: 0 0/6 * * *
 jobs:
   x86:
     runs-on: ubuntu-latest
